@@ -4,6 +4,7 @@ const {
     createRound,
     createEndSession,
     getAllSessions,
+    deleteSession,
 } = require("../controller/sessionController");
 const router = express.Router();
 
@@ -18,6 +19,9 @@ router.post("/:id/round", createRound);
 
 // End session
 router.post("/:id/stop", createEndSession);
+
+// DELETE a session by ID
+router.delete("/:id", deleteSession);
 
 router.get("/", (req, res) => {
     res.send("Backend is running!");

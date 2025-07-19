@@ -38,9 +38,24 @@ const getAllSessions = async (req, res) => {
     res.json(sessions);
 };
 
+const deleteSession = async (req, res) => {
+    try {
+        const deletedSession = await GameSession.findByIdAndDelete(
+            req.params.id
+        );
+        if (!deletedSession) {
+            return res.status(404).json({ message: "Session not found" });
+        }
+        res.json({ message: "Session deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting session", error });
+    }
+};
+
 module.exports = {
     createSession,
     createRound,
     createEndSession,
     getAllSessions,
+    deleteSession,
 };
