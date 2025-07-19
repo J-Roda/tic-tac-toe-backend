@@ -4,7 +4,11 @@ const GameSessionSchema = new mongoose.Schema(
     {
         player1: { type: String, required: true },
         player2: { type: String, required: true },
-        roundsPlayed: Number,
+        rounds: [
+            {
+                winner: String,
+            },
+        ],
         stats: {
             player1Wins: { type: Number, default: 0 },
             player2Wins: { type: Number, default: 0 },

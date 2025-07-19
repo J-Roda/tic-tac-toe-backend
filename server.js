@@ -23,7 +23,3 @@ mongoose
         app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     })
     .catch((err) => console.log(err));
-
-app.get("/", (req, res) => {
-    res.send("API is running");
-});
