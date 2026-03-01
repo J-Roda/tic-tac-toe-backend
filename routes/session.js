@@ -3,6 +3,7 @@ const {
     createSession,
     createRound,
     createEndSession,
+    reactivateSession,
     getAllSessions,
     deleteSession,
 } = require("../controller/sessionController");
@@ -21,8 +22,11 @@ router.get("/all", getAllSessions);
 // Play a round
 router.post("/:id/round", createRound);
 
-// End session
+// End session (idempotent — safe to call even if already ended)
 router.post("/:id/stop", createEndSession);
+
+// Reactivate a session stopped by page refresh — called on Resume
+router.post("/:id/reactivate", reactivateSession);
 
 // Delete session
 router.delete("/:id", deleteSession);

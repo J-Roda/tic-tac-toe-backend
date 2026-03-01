@@ -15,15 +15,11 @@ const createSession = async (req, res, next) => {
         const player2 = sanitizeString(req.body.player2);
 
         if (!player1 || !player2) {
-            return res
-                .status(400)
-                .json({ error: "player1 and player2 are required." });
+            return res.status(400).json({ error: "player1 and player2 are required." });
         }
 
         if (player1 === player2) {
-            return res
-                .status(400)
-                .json({ error: "Players must have different names." });
+            return res.status(400).json({ error: "Players must have different names." });
         }
 
         const session = new GameSession({ player1, player2 });
@@ -58,14 +54,10 @@ const createRound = async (req, res, next) => {
             return res.status(400).json({ error: "Session has already ended." });
         }
 
-        // Enforce max rounds per session to prevent infinite spam
         if (session.rounds.length >= 100) {
-            return res
-                .status(400)
-                .json({ error: "Maximum rounds reached for this session." });
+            return res.status(400).json({ error: "Maximum rounds reached for this session." });
         }
 
-        // Winner must be a known player or 'draw'
         const validWinners = [session.player1, session.player2, "draw"];
         if (!validWinners.includes(winner)) {
             return res.status(400).json({ error: "Invalid winner value." });
@@ -98,8 +90,11 @@ const createEndSession = async (req, res, next) => {
             return res.status(404).json({ error: "Session not found." });
         }
 
+        // Idempotent — if already ended just return it, don't error.
+        // This prevents the resume flow from breaking when beforeunload
+        // already stopped the session before the user clicked Resume.
         if (!session.isActive) {
-            return res.status(400).json({ error: "Session is already ended." });
+            return res.json(session);
         }
 
         session.isActive = false;
@@ -110,9 +105,36 @@ const createEndSession = async (req, res, next) => {
     }
 };
 
+// Reactivates a session that was stopped by a page refresh/close.
+// Called by the frontend when the user chooses "Resume" on the abandon prompt.
+const reactivateSession = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        if (!isValidObjectId(id)) {
+            return res.status(400).json({ error: "Invalid session ID." });
+        }
+
+        const session = await GameSession.findById(id);
+
+        if (!session) {
+            return res.status(404).json({ error: "Session not found." });
+        }
+
+        if (session.rounds.length >= 100) {
+            return res.status(400).json({ error: "Maximum rounds reached for this session." });
+        }
+
+        session.isActive = true;
+        await session.save();
+        res.json(session);
+    } catch (err) {
+        next(err);
+    }
+};
+
 const getAllSessions = async (req, res, next) => {
     try {
-        // Paginate to prevent dumping the entire collection
         const page  = Math.max(1, parseInt(req.query.page)  || 1);
         const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
         const skip  = (page - 1) * limit;
@@ -159,6 +181,7 @@ module.exports = {
     createSession,
     createRound,
     createEndSession,
+    reactivateSession,
     getAllSessions,
     deleteSession,
 };
