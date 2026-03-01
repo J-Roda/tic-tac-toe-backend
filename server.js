@@ -22,7 +22,7 @@ app.use(
   cors({
     origin: (origin, cb) => {
       // Allow server-to-server / curl requests (no origin) only in dev
-      if (!origin && process.env.NODE_ENV !== "production") return cb(null, true);
+      if (!origin) return cb(null, true);
       if (allowedOrigins.includes(origin)) return cb(null, true);
       cb(new Error(`CORS: origin '${origin}' not allowed`));
     },
