@@ -6,6 +6,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 require("dotenv").config();
 
 const sessionRoutes = require("./routes/session");
+const { default: rateLimit } = require("express-rate-limit");
 
 const app = express();
 
@@ -23,6 +24,15 @@ app.use(express.json({ limit: "10kb" }));
 
 // ── Strip $ and . from req.body/query/params to block NoSQL injection ─────────
 app.use(mongoSanitize());
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
+});
+app.use(globalLimiter);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use("/api/session", sessionRoutes);

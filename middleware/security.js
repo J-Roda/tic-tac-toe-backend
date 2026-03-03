@@ -11,10 +11,10 @@ const readLimiter = rateLimit({
 });
 
 // ── Write limiter — mutation routes only ──────────────────────────────────────
-// 60 req / 15 min per IP — tight enough to stop spam, loose enough for normal play
+// 30 req / 15 min per IP — tight enough to stop spam, loose enough for normal play
 const writeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 60,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many write requests, slow down." },
