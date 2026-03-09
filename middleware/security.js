@@ -1,4 +1,4 @@
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit');
 
 // ── Read limiter — GET routes polled by the frontend (health + archive) ───────
 // 300 req / 15 min per IP (~20 req/min — comfortably covers all polling intervals)
@@ -7,7 +7,7 @@ const readLimiter = rateLimit({
   max: 300,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Too many requests, please try again later." },
+  message: { error: 'Too many requests, please try again later.' },
 });
 
 // ── Write limiter — mutation routes only ──────────────────────────────────────
@@ -17,10 +17,18 @@ const writeLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Too many write requests, slow down." },
+  message: { error: 'Too many write requests, slow down.' },
+});
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
 });
 
 module.exports = {
   readLimiter,
   writeLimiter,
+  globalLimiter,
 };
