@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-const TTL_DAYS = 3;
-const TTL_SECONDS = TTL_DAYS * 24 * 60 * 60;
+export const TTL_DAYS = 5;
+export const TTL_SECONDS = TTL_DAYS * 24 * 60 * 60;
 
 const GameSessionSchema = new mongoose.Schema(
   {

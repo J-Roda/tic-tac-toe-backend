@@ -6,7 +6,7 @@ const GameSession = require('../models/GameSession');
 
 // cleaned up synchronously before the server starts accepting requests.
 async function purgeExpiredSessions() {
-  const TTL_MS = 3 * 24 * 60 * 60 * 1000;
+  const TTL_MS = GameSession.TTL_SECONDS * 1000;
   const cutoff = new Date(Date.now() - TTL_MS);
   try {
     const result = await GameSession.deleteMany({ createdAt: { $lt: cutoff } });
