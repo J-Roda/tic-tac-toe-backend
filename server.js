@@ -11,6 +11,8 @@ const { globalLimiter } = require('./middleware/security');
 
 const app = express();
 
+require('node:dns/promises').setServers(['1.1.1.1', '8.8.8.8']);
+
 // Trust Render's reverse proxy so express-rate-limit reads the real client IP
 // from X-Forwarded-For instead of the proxy's internal IP
 app.set('trust proxy', 1);

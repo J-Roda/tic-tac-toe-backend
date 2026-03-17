@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-
-export const TTL_DAYS = 5;
-export const TTL_SECONDS = TTL_DAYS * 24 * 60 * 60;
+const { TTL_SECONDS } = require('../enum');
 
 const GameSessionSchema = new mongoose.Schema(
   {
